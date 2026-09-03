@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAJKUMAR R // Game Environment Design & Lighting Artist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0d14;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-bg-hover: rgba(255, 255, 255, 0.07);
+            --glass-card: rgba(18, 24, 38, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-hover: rgba(0, 229, 255, 0.3);
+            --glass-glow: rgba(0, 229, 255, 0.15);
+
+            --accent-cyan: #00f0ff;
+            --accent-purple: #7000ff;
+            --accent-blue: #3b82f6;
+
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Ambient Background Glow Spheres */
+        .ambient-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: -1;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .glow-1 {
+            top: -100px;
+            left: -100px;
+            background: var(--accent-purple);
+        }
+
+        .glow-2 {
+            top: 40%;
+            right: -150px;
+            background: var(--accent-cyan);
+        }
+
+        .glow-3 {
+            bottom: -100px;
+            left: 30%;
+            background: var(--accent-blue);
+        }
+
+        /* Floating Glass Navigation Bar */
+        nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1100px;
+            background: rgba(10, 13, 20, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .brand-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--accent-cyan);
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+
+        /* Page Container */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 130px 0 60px;
+            flex-grow: 1;
+        }
+
+        /* Page Section View Switching */
+        .page-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .page-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeIn 0.4s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Glass Card Base */
+        .glass-card {
+            background: var(--glass-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        /* HERO PAGE */
+        .hero-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.8rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+        }
+
+        .status-pulse {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-cyan);
+        }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fff 30%, var(--accent-cyan) 80%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 720px;
+            font-weight: 400;
+        }
+
+        .btn-glass {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.9rem 2rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-glass:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* SECTION HEADINGS */
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-tag {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* PORTFOLIO / WORK SECTION */
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .work-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .work-card:hover {
+            border-color: var(--glass-border-hover);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0, 240, 255, 0.15);
+        }
+
+        /* Dual-Image Slider Preview */
+        .work-preview {
+            width: 100%;
+            height: 240px;
+            background: #121826;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .work-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        .work-preview img.img-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .work-card:hover .work-preview img.img-active {
+            transform: scale(1.04);
+        }
+
+        .work-tag-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(10, 13, 20, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            color: var(--accent-cyan);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.3rem 0.8rem;
+            border-radius: 100px;
+            z-index: 2;
+        }
+
+        /* Image Switcher Pill Controls */
+        .image-toggle-bar {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            background: rgba(10, 13, 20, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 4px 8px;
+            border-radius: 100px;
+            z-index: 3;
+        }
+
+        .img-toggle-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+
+        .img-toggle-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .img-toggle-btn.active {
+            color: var(--bg-dark);
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .work-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .work-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .work-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+        }
+
+        .work-footer {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .work-tools {
+            font-size: 0.82rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ABOUT PAGE */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .bio-text {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.2rem;
+        }
+
+        .bio-text strong {
+            color: #fff;
+        }
+
+        .edu-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 1.4rem 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+        }
+
+        .edu-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .edu-institution {
+            font-size: 0.88rem;
+            color: var(--accent-cyan);
+            margin-top: 0.2rem;
+        }
+
+        .edu-date {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* SKILLS PAGE */
+        .software-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.2rem;
+        }
+
+        .software-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            padding: 1.2rem;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .software-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--glass-border-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .soft-category {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .soft-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* CERTIFICATIONS PAGE */
+        .cert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .cert-card {
+            background: var(--glass-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.8rem;
+            backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cert-card:hover {
+            border-color: var(--glass-border-hover);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px var(--glass-glow);
+        }
+
+        .cert-year {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .cert-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .cert-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+        }
+
+        /* CONTACT PAGE */
+        .contact-page-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 3rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: #fff;
+            padding: 0.9rem 1.2rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent-cyan);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background: rgba(10, 13, 20, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        @media (max-width: 850px) {
+
+            .about-grid,
+            .contact-page-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            nav .nav-links {
+                gap: 0.3rem;
+            }
+
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.5rem;
+            }
+
+            .glass-card {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Ambient Glow Effects -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+    <div class="ambient-glow glow-3"></div>
+
+    <!-- FLOATING GLASS NAV BAR -->
+    <nav>
+        <div class="brand" onclick="switchPage('home')">
+            <div class="brand-dot"></div>
+            RAJKUMAR R
+        </div>
+        <ul class="nav-links">
+            <li><a class="nav-link active" onclick="switchPage('home')">Home</a></li>
+            <li><a class="nav-link" onclick="switchPage('work')">Work</a></li>
+            <li><a class="nav-link" onclick="switchPage('about')">About</a></li>
+            <li><a class="nav-link" onclick="switchPage('skills')">Skills</a></li>
+            <li><a class="nav-link" onclick="switchPage('certifications')">Certifications</a></li>
+            <li><a class="nav-link" onclick="switchPage('contact')">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <!-- PAGE 1: HOME -->
+        <section id="page-home" class="page-section active">
+            <div class="glass-card hero-card">
+                <div class="status-badge">
+                    <div class="status-pulse"></div>
+                    B.Sc. Animation (Game Design & Development Specialization)
+                </div>
+
+                <h1 class="hero-title">
+                    RAJKUMAR R <br>
+                    <span class="gradient-text">Game Environment Design & Lighting Artist</span>
+                </h1>
+
+                <p class="hero-subtitle">
+                    Crafting immersive 3D worlds, atmospheric lighting setups, and real-time game environments.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+                    <button onclick="switchPage('work')" class="btn-glass"
+                        style="background: var(--accent-cyan); color: var(--bg-dark); border-color: var(--accent-cyan);">View
+                        My Work &rarr;</button>
+                    <button onclick="switchPage('about')" class="btn-glass">About Me</button>
+                    <button onclick="switchPage('contact')" class="btn-glass"
+                        style="background: rgba(0,240,255,0.05); border-color: rgba(0,240,255,0.2);">Get In
+                        Touch</button>
+                </div>
+            </div>
+        </section>
+        <section id="page-work" class="page-section">
+            <div class="glass-card">
+                <div class="section-header">
+                    <span class="section-tag">Portfolio</span>
+                    <h2 class="section-title">Selected Projects & Environment Work</h2>
+                </div>
+
+                <div class="work-grid">
+                    <div class="work-card">
+                        <div class="work-preview">
+                            <span class="work-tag-badge">LIGHTING</span>
+                            <img src="/render/side_pose_half.jpg" alt="Automotive Lighting Angle 1" class="img-active">
+                            <img src="/render/back_side.jpg" alt="Automotive Lighting Angle 2">
+
+                            <div class="image-toggle-bar">
+                                <button class="img-toggle-btn active" onclick="switchCardImage(this, 0)">View 1</button>
+                                <button class="img-toggle-btn" onclick="switchCardImage(this, 1)">View 2</button>
+                            </div>
+                        </div>
+                        <div class="work-content">
+                            <div>
+                                <h3 class="work-title">Automotive Lighting</h3>
+                                <p class="work-desc">A cinematic automotive lighting setup created in Maya, exploring
+                                    light composition, contrast, reflections, shadows, and mood for a realistic vehicle
+                                    presentation.</p>
+                            </div>
+                            <div class="work-footer">
+                                <span class="work-tools">Maya / Arnold</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-card">
+                        <div class="work-preview">
+                            <span class="work-tag-badge">LIGHTING</span>
+                            <img src="/render/bed_room.jpg" alt="Atmospheric Temple Ruins Shot 1" class="img-active">
+                            <img src="/render/bedroom_arealight.jpg" alt="Atmospheric Temple Ruins Shot 2">
+
+                            <div class="image-toggle-bar">
+                                <button class="img-toggle-btn active" onclick="switchCardImage(this, 0)">View 1</button>
+                                <button class="img-toggle-btn" onclick="switchCardImage(this, 1)">View 2</button>
+                            </div>
+                        </div>
+                        <div class="work-content">
+                            <div>
+                                <h3 class="work-title">Interior Lighting</h3>
+                                <p class="work-desc">Realistic bedroom lighting study created in Maya, focusing on
+                                    natural sunlight, window shadows, warm tones, contrast, and light composition.</p>
+                            </div>
+                            <div class="work-footer">
+                                <span class="work-tools">Maya / Arnold</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-card">
+                        <div class="work-preview">
+                            <span class="work-tag-badge">LIGHTING</span>
+                            <img src="/render/Dinner_room.jpg" alt="Dining Room Lighting Shot 1" class="img-active">
+                            <div class="image-toggle-bar">
+                            </div>
+                        </div>
+                        <div class="work-content">
+                            <div>
+                                <h3 class="work-title">Dining Room Lighting</h3>
+                                <p class="work-desc">A modern dining room lighting setup created in Maya, exploring
+                                    balanced artificial lighting, soft shadows, contrast, and atmospheric depth..</p>
+                            </div>
+                            <div class="work-footer">
+                                <span class="work-tools">Maya / Arnold</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-card">
+                        <div class="work-preview">
+                            <span class="work-tag-badge">Lighting</span>
+                            <img src="/render/art station _direction light.jpg" alt="Motion Capture Rigging & View 1"
+                                class="img-active">
+                            <img src="/render/Art station Area Light.jpg" alt="Motion Capture Scene & View 2">
+                            <img src="/render/Art_station_day.jpg" alt="Motion Capture Scene & View 3">
+                            <div class="image-toggle-bar">
+                                <button class="img-toggle-btn active" onclick="switchCardImage(this, 0)">View 1</button>
+                                <button class="img-toggle-btn" onclick="switchCardImage(this, 1)">View 2</button>
+                                <button class="img-toggle-btn" onclick="switchCardImage(this, 2)">View 3</button>
+                            </div>
+                        </div>
+                        <div class="work-content">
+                            <div>
+                                <h3 class="work-title">Art Station Lighting</h3>
+                                <p class="work-desc">Lighting study created in Maya, exploring directional and area
+                                    lighting to create different moods, shadow patterns, contrast, and realistic
+                                    interior illumination.</p>
+                            </div>
+                            <div class="work-footer">
+                                <span class="work-tools">Maya / Arnold</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: ABOUT & EDUCATION -->
+        <section id="page-about" class="page-section">
+            <div class="glass-card">
+                <div class="section-header">
+                    <span class="section-tag">Background</span>
+                    <h2 class="section-title">About Me & Academic Journey</h2>
+                </div>
+
+                <div class="about-grid">
+                    <div>
+                        <p class="bio-text">
+                            I am a creative learner who enjoys turning ideas into interactive visuals. My primary focus
+                            lies in <strong>3D modelling</strong>, <strong>lighting</strong>, <strong>Motion
+                                Capture</strong>, and <strong>game environment design</strong>.
+                        </p>
+                        <p class="bio-text">
+                            I am constantly practicing and improving my technical skills across industry-standard
+                            real-time engines and 3D pipelines to build compelling, immersive visual experiences.
+                        </p>
+                    </div>
+
+                    <div>
+                        <div class="soft-category" style="margin-bottom: 0.8rem;">Education</div>
+
+                        <div class="edu-card">
+                            <div class="edu-title">B.Sc. Animation (Game Design & Development)</div>
+                            <div class="edu-institution">Subbalakshmi Lakshmipathy College of Science, Madurai</div>
+                            <div class="edu-date">2024 – 2027</div>
+                        </div>
+
+                        <div class="edu-card">
+                            <div class="edu-title">Higher Secondary (HSC)</div>
+                            <div class="edu-institution">Sri Sangeetha Vidyalaya Matriculation School, Ramanathapuram
+                            </div>
+                            <div class="edu-date">2023 – 2024 | Core: CS, Physics, Chemistry, Biology</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: SOFTWARE & SKILLS -->
+        <section id="page-skills" class="page-section">
+            <div class="glass-card">
+                <div class="section-header">
+                    <span class="section-tag">Skills</span>
+                    <h2 class="section-title">Software & Core Skills</h2>
+                </div>
+                <div class="software-grid">
+                    <div class="software-card">
+                        <span class="soft-category">Autodesk Maya</span>
+                        <span class="soft-name">Modelling, Lighting, Animation & Motion Capture</span>
+                    </div>
+
+                    <div class="software-card">
+                        <span class="soft-category">Unreal Engine</span>
+                        <span class="soft-name">Environment Design & Motion Capture</span>
+                    </div>
+
+                    <div class="software-card">
+                        <span class="soft-category">Unity</span>
+                        <span class="soft-name">Game Design & Interactive Art</span>
+                    </div>
+
+                    <div class="software-card">
+                        <span class="soft-category">Adobe Photoshop</span>
+                        <span class="soft-name">Graphic Design</span>
+                    </div>
+
+                    <div class="software-card">
+                        <span class="soft-category">Figma</span>
+                        <span class="soft-name">UI / UX Design</span>
+                    </div>
+
+                    <div class="software-card">
+                        <span class="soft-category">Adobe Premiere Pro</span>
+                        <span class="soft-name">Video Editing & Showreel Assembly</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 5: CERTIFICATIONS -->
+        <section id="page-certifications" class="page-section">
+            <div class="glass-card">
+                <div class="section-header">
+                    <span class="section-tag">Credentials</span>
+                    <h2 class="section-title">Certifications & Accomplishments</h2>
+                </div>
+
+                <div class="cert-grid">
+                    <div class="cert-card">
+                        <div>
+                            <div class="cert-year">2026 // Tamil Nadu Game Association</div>
+                            <h3 class="cert-title">Global Game Jam 2026</h3>
+                            <p class="cert-desc">Participated in and successfully completed a game build organized by
+                                the Tamil Nadu Game Association during February 2026.</p>
+                        </div>
+                    </div>
+
+                    <div class="cert-card">
+                        <div>
+                            <div class="cert-year">2025 // Unity Certification</div>
+                            <h3 class="cert-title">Unity Certified Associate Artist</h3>
+                            <p class="cert-desc">Focused on real-time 3D asset integration, materials, lighting, and
+                                visual artist workflows in Unity.</p>
+                        </div>
+                    </div>
+
+                    <div class="cert-card">
+                        <div>
+                            <div class="cert-year">2024 // Karam Academy</div>
+                            <h3 class="cert-title">AR, VR, Photogrammetry & Motion Capture</h3>
+                            <p class="cert-desc">Specialized training focused on immersive technologies, 3D data
+                                capture, and motion tracking techniques.</p>
+                        </div>
+                    </div>
+
+                    <div class="cert-card">
+                        <div>
+                            <div class="cert-year">2026 // Academic Research</div>
+                            <h3 class="cert-title">FinTech Video Content Research</h3>
+                            <p class="cert-desc">Presented research analyzing YouTube's role in FinTech promotion,
+                                driving financial literacy, and consumer education through video content.</p>
+                        </div>
+                    </div>
+
+                    <div class="cert-card">
+                        <div>
+                            <div class="cert-year">2026 // Microsoft Certification</div>
+                            <h3 class="cert-title">Microsoft Copilot & M365 Copilot Agents</h3>
+                            <p class="cert-desc">Completed training on leveraging Microsoft Copilot and prebuilt M365
+                                Copilot agents to streamline everyday tasks and boost efficiency.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 6: CONTACT -->
+        <section id="page-contact" class="page-section">
+            <div class="glass-card">
+                <div class="section-header">
+                    <span class="section-tag">Connect</span>
+                    <h2 class="section-title">Get In Touch</h2>
+                </div>
+
+                <div class="contact-page-wrapper">
+                    <div>
+                        <p class="bio-text">
+                            Interested in collaborating on environment design, lighting projects, or game development
+                            opportunities? Feel free to send a message or contact me directly.
+                        </p>
+
+                        <div style="display: flex; flex-direction: column; gap: 1.2rem; margin-top: 2rem;">
+                            <div class="edu-card" style="margin-bottom: 0;">
+                                <div class="soft-category">Email</div>
+                                <a href="mailto:rajkumar150307@gmail.com"
+                                    style="color: #fff; text-decoration: none; font-weight: 600;">rajkumar150307@gmail.com</a>
+                            </div>
+
+                            <div class="edu-card" style="margin-bottom: 0;">
+                                <div class="soft-category">Phone</div>
+                                <a href="tel:+918608821419"
+                                    style="color: #fff; text-decoration: none; font-weight: 600;">+91 86088 21419</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" placeholder="Your Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" placeholder="yourname@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea rows="4" placeholder="Discuss environment design, lighting, or collaboration..."
+                                required></textarea>
+                        </div>
+                        <button type="submit" class="btn-glass" style="width: 100%; justify-content: center;">Send
+                            Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 RAJKUMAR R // GAME ENVIRONMENT DESIGN & LIGHTING ARTIST</p>
+    </footer>
+
+    <script>
+        function switchPage(pageId) {
+            const sections = document.querySelectorAll('.page-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const activeSection = document.getElementById(`page-${pageId}`);
+            if (activeSection) {
+                activeSection.classList.add('active');
+            }
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('onclick') && link.getAttribute('onclick').includes(pageId)) {
+                    link.classList.add('active');
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchCardImage(button, imageIndex) {
+            const previewContainer = button.closest('.work-preview');
+            const images = previewContainer.querySelectorAll('img');
+            const buttons = previewContainer.querySelectorAll('.img-toggle-btn');
+
+            images.forEach((img, idx) => {
+                if (idx === imageIndex) {
+                    img.classList.add('img-active');
+                } else {
+                    img.classList.remove('img-active');
+                }
+            });
+
+            buttons.forEach((btn, idx) => {
+                if (idx === imageIndex) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('contact-form');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const btn = form.querySelector('button');
+                    btn.innerText = "Message Sent Successfully!";
+                    btn.style.background = "var(--accent-cyan)";
+                    btn.style.color = "var(--bg-dark)";
+                    form.reset();
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
