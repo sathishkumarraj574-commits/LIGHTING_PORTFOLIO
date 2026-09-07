@@ -649,6 +649,179 @@
             }
         }
     </style>
+    <style>
+        /* ================================
+   MOBILE RESPONSIVE DESIGN
+   ================================ */
+
+        @media (max-width: 768px) {
+
+            /* Prevent horizontal scrolling */
+            html,
+            body {
+                width: 100%;
+                overflow-x: hidden;
+            }
+
+            /* Main container */
+            .container {
+                width: 90% !important;
+                max-width: 100% !important;
+                margin: 0 auto !important;
+            }
+
+            /* Navigation */
+            nav {
+                padding: 12px 5% !important;
+            }
+
+            /* Hero section */
+            .hero {
+                padding: 100px 0 50px !important;
+                min-height: auto !important;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem !important;
+                line-height: 1.15 !important;
+            }
+
+            .hero p {
+                font-size: 0.9rem !important;
+                line-height: 1.5 !important;
+            }
+
+            /* All sections */
+            section {
+                padding: 50px 0 !important;
+            }
+
+            /* Project grid */
+            .work-grid {
+                grid-template-columns: 1fr !important;
+                width: 100% !important;
+                gap: 20px !important;
+            }
+
+            /* Project cards */
+            .work-card {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            /* Project preview */
+            .work-preview {
+                width: 100% !important;
+                height: 210px !important;
+            }
+
+            /* Project content */
+            .work-content {
+                padding: 18px !important;
+            }
+
+            .work-title {
+                font-size: 1.2rem !important;
+            }
+
+            .work-desc {
+                font-size: 0.85rem !important;
+                line-height: 1.6 !important;
+            }
+
+            /* Project footer */
+            .work-footer {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 10px !important;
+            }
+
+            /* Figma button */
+            .figma-btn {
+                width: 100% !important;
+                box-sizing: border-box !important;
+                padding: 12px !important;
+                text-align: center !important;
+            }
+
+            /* Images */
+            img {
+                max-width: 100%;
+            }
+
+        }
+
+
+        /* ================================
+   SMALL MOBILE PHONES
+   ================================ */
+
+        @media (max-width: 480px) {
+
+            .container {
+                width: 88% !important;
+            }
+
+            .hero {
+                padding-top: 90px !important;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem !important;
+            }
+
+            .hero p {
+                font-size: 0.8rem !important;
+            }
+
+            section {
+                padding: 40px 0 !important;
+            }
+
+            .work-preview {
+                height: 180px !important;
+            }
+
+            .work-content {
+                padding: 15px !important;
+            }
+
+            .work-title {
+                font-size: 1.05rem !important;
+            }
+
+            .work-desc {
+                font-size: 0.78rem !important;
+            }
+
+            .work-tag-badge {
+                font-size: 0.7rem !important;
+            }
+
+            .work-tools {
+                font-size: 0.75rem !important;
+            }
+
+        }
+
+
+        /* ================================
+   TABLET
+   ================================ */
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+
+            .container {
+                width: 90% !important;
+            }
+
+            .work-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 20px !important;
+            }
+
+        }
+    </style>
 </head>
 
 <body>
