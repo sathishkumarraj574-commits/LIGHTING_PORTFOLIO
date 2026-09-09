@@ -1022,7 +1022,7 @@
 
                     <div class="software-card">
                         <span class="soft-category">Unity</span>
-                        <span class="soft-name">Game Design & Interactive Art</span>
+                        <span class="soft-name">Game Design</span>
                     </div>
 
                     <div class="software-card">
@@ -1130,18 +1130,19 @@
                         </div>
                     </div>
 
-                    <form id="contact-form">
+                    <form id="contact-form" action="https://formspree.io/f/xdeozjla" method="POST">
                         <div class="form-group">
                             <label>Name</label>
-                            <input type="text" placeholder="Your Full Name" required>
+                            <input type="text" name="name" placeholder="Your Full Name" required>
                         </div>
                         <div class="form-group">
                             <label>Email Address</label>
-                            <input type="email" placeholder="yourname@email.com" required>
+                            <input type="email" name="email" placeholder="yourname@email.com" required>
                         </div>
                         <div class="form-group">
                             <label>Message</label>
-                            <textarea rows="4" placeholder="Discuss environment design, lighting, or collaboration..."
+                            <textarea name="message" rows="4"
+                                placeholder="Discuss environment design, lighting, or collaboration..."
                                 required></textarea>
                         </div>
                         <button type="submit" class="btn-glass" style="width: 100%; justify-content: center;">Send
@@ -1220,13 +1221,44 @@
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('contact-form');
             if (form) {
-                form.addEventListener('submit', (e) => {
+                form.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const btn = form.querySelector('button');
-                    btn.innerText = "Message Sent Successfully!";
-                    btn.style.background = "var(--accent-cyan)";
-                    btn.style.color = "var(--bg-dark)";
-                    form.reset();
+                    const originalText = btn.innerText;
+
+                    btn.innerText = "Sending...";
+                    btn.style.opacity = "0.7";
+                    btn.disabled = true;
+
+                    const formData = new FormData(form);
+
+                    try {
+                        const response = await fetch(form.action, {
+                            method: form.method,
+                            body: formData,
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            btn.innerText = "Message Sent Successfully!";
+                            btn.style.background = "var(--accent-cyan)";
+                            btn.style.color = "var(--bg-dark)";
+                            btn.style.opacity = "1";
+                            form.reset();
+                        } else {
+                            btn.innerText = "Error Sending Message";
+                            btn.style.opacity = "1";
+                            btn.disabled = false;
+                            setTimeout(() => { btn.innerText = originalText; }, 3000);
+                        }
+                    } catch (error) {
+                        btn.innerText = "Connection Error";
+                        btn.style.opacity = "1";
+                        btn.disabled = false;
+                        setTimeout(() => { btn.innerText = originalText; }, 3000);
+                    }
                 });
             }
         });
