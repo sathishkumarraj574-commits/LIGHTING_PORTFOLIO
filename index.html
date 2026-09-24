@@ -354,6 +354,17 @@
             flex-direction: column;
         }
 
+        /* LANDSCAPE WIDE CARD SPECIFIC STYLING - STRICT 16:9 RATIO */
+        .work-card.landscape-card {
+            grid-column: 1 / -1;
+        }
+
+        .work-card.landscape-card .work-preview {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+        }
+
         .work-card:hover {
             border-color: var(--glass-border-hover);
             transform: translateY(-6px);
@@ -366,9 +377,11 @@
             background: #121826;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
-        .work-preview img {
+        .work-preview img,
+        .work-preview video {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -377,16 +390,77 @@
             left: 0;
             opacity: 0;
             transition: opacity 0.4s ease, transform 0.5s ease;
+        }
+
+        .work-preview img.img-active,
+        .work-preview video.img-active {
+            opacity: 1;
+        }
+
+        .work-card:hover .work-preview img.img-active,
+        .work-card:hover .work-preview video.img-active {
+            transform: scale(1.03);
+        }
+
+        /* VIDEO PLAY BUTTON OVERLAY */
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10, 13, 20, 0.35);
+            backdrop-filter: blur(2px);
+            transition: all 0.3s ease;
+            z-index: 4;
+        }
+
+        .play-btn {
+            width: 64px;
+            height: 64px;
+            background: rgba(10, 13, 20, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.35);
+            transition: all 0.3s ease;
             pointer-events: none;
         }
 
-        .work-preview img.img-active {
-            opacity: 1;
-            pointer-events: auto;
+        .play-btn svg {
+            width: 26px;
+            height: 26px;
+            fill: var(--accent-cyan);
+            transition: all 0.3s ease;
         }
 
-        .work-card:hover .work-preview img.img-active {
-            transform: scale(1.04);
+        .play-btn .play-icon {
+            margin-left: 3px;
+        }
+
+        .work-preview:hover .play-btn {
+            transform: scale(1.12);
+            background: var(--accent-cyan);
+            box-shadow: 0 0 35px rgba(0, 240, 255, 0.7);
+        }
+
+        .work-preview:hover .play-btn svg {
+            fill: var(--bg-dark);
+        }
+
+        .video-overlay.playing {
+            opacity: 0;
+            background: rgba(10, 13, 20, 0.5);
+        }
+
+        .work-preview:hover .video-overlay.playing {
+            opacity: 1;
         }
 
         .work-tag-badge {
@@ -401,7 +475,7 @@
             font-weight: 600;
             padding: 0.3rem 0.8rem;
             border-radius: 100px;
-            z-index: 2;
+            z-index: 5;
         }
 
         .image-toggle-bar {
@@ -416,7 +490,7 @@
             border: 1px solid var(--glass-border);
             padding: 4px 8px;
             border-radius: 100px;
-            z-index: 3;
+            z-index: 5;
         }
 
         .img-toggle-btn {
@@ -481,25 +555,6 @@
             color: var(--accent-cyan);
             font-weight: 600;
             letter-spacing: 0.5px;
-        }
-
-        .figma-btn {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 8px 16px;
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid var(--accent-cyan);
-            color: var(--accent-cyan);
-            border-radius: 100px;
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .figma-btn:hover {
-            background: var(--accent-cyan);
-            color: var(--bg-dark);
         }
 
         /* ABOUT PAGE */
@@ -824,8 +879,8 @@
         <section id="page-work" class="page-section">
             <div class="glass-card">
                 <div class="section-header">
-                    <span class="section-tag">Portfolio</span>
-                    <h2 class="section-title">Selected Projects</h2>
+                    <span class="section-tag">MY WORKS</span>
+                    <h2 class="section-title">Featured Projects</h2>
                 </div>
 
                 <div class="work-grid">
@@ -943,9 +998,67 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
+                    <!-- ENVIRONMENT DESIGN VIDEO CARD 1 -->
+                    <div class="work-card landscape-card">
+                        <div class="work-preview" onclick="toggleVideoPlay(this)">
+                            <span class="work-tag-badge">ENVIRONMENT DESIGN</span>
+                            <video src="/Environment/Env.mp4" class="img-active" loop muted playsinline></video>
 
+                            <div class="video-overlay">
+                                <div class="play-btn">
+                                    <svg viewBox="0 0 24 24" class="play-icon">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    <svg viewBox="0 0 24 24" class="pause-icon" style="display: none;">
+                                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="work-content">
+                            <div>
+                                <h3 class="work-title">Natural Environment</h3>
+                                <p class="work-desc">A natural environment scene showcasing composition,
+                                    lighting, atmosphere, vegetation, and cinematic camera presentation.</p>
+                            </div>
+                            <div class="work-footer">
+                                <span class="work-tools">Unreal Engine</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ENVIRONMENT DESIGN VIDEO CARD 2 -->
+                    <div class="work-card landscape-card">
+                        <div class="work-preview" onclick="toggleVideoPlay(this)">
+                            <span class="work-tag-badge">ENVIRONMENT DESIGN</span>
+                            <video src="/Environment/CITY.mp4" class="img-active" loop muted playsinline></video>
+
+                            <div class="video-overlay">
+                                <div class="play-btn">
+                                    <svg viewBox="0 0 24 24" class="play-icon">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                    <svg viewBox="0 0 24 24" class="pause-icon" style="display: none;">
+                                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="work-content">
+                            <div>
+                                <h3 class="work-title">City Environment</h3>
+                                <p class="work-desc">An urban environment design focusing on architecture, lighting,
+                                    and real-time performance.</p>
+                            </div>
+                            <div class="work-footer">
+                                <span class="work-tools">Unreal Engine</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- /.work-grid -->
+            </div><!-- /.glass-card -->
         </section>
 
         <!-- PAGE 3: ABOUT & EDUCATION -->
@@ -1004,12 +1117,12 @@
 
                     <div class="software-card">
                         <span class="soft-category">Unreal Engine</span>
-                        <span class="soft-name">Environment Design & Motion Capture</span>
+                        <span class="soft-name">Environment Design , Lighting & Motion Capture</span>
                     </div>
 
                     <div class="software-card">
                         <span class="soft-category">Unity</span>
-                        <span class="soft-name">Game Design </span>
+                        <span class="soft-name">Game Design & Game Development </span>
                     </div>
 
                     <div class="software-card">
@@ -1183,21 +1296,49 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function switchCardImage(button, imageIndex) {
+        function toggleVideoPlay(previewContainer) {
+            const video = previewContainer.querySelector('video');
+            const overlay = previewContainer.querySelector('.video-overlay');
+            const playIcon = previewContainer.querySelector('.play-icon');
+            const pauseIcon = previewContainer.querySelector('.pause-icon');
+
+            if (!video) return;
+
+            if (video.paused) {
+                video.play();
+                if (overlay) overlay.classList.add('playing');
+                if (playIcon) playIcon.style.display = 'none';
+                if (pauseIcon) pauseIcon.style.display = 'block';
+            } else {
+                video.pause();
+                if (overlay) overlay.classList.remove('playing');
+                if (playIcon) playIcon.style.display = 'block';
+                if (pauseIcon) pauseIcon.style.display = 'none';
+            }
+        }
+
+        function switchCardImage(button, mediaIndex) {
             const previewContainer = button.closest('.work-preview');
-            const images = previewContainer.querySelectorAll('img');
+            const mediaItems = previewContainer.querySelectorAll('img, video');
             const buttons = previewContainer.querySelectorAll('.img-toggle-btn');
 
-            images.forEach((img, idx) => {
-                if (idx === imageIndex) {
-                    img.classList.add('img-active');
+            mediaItems.forEach((media, idx) => {
+                if (idx === mediaIndex) {
+                    media.classList.add('img-active');
+                    if (media.tagName === 'VIDEO') {
+                        media.play();
+                    }
                 } else {
-                    img.classList.remove('img-active');
+                    media.classList.remove('img-active');
+                    if (media.tagName === 'VIDEO') {
+                        media.pause();
+                        media.currentTime = 0;
+                    }
                 }
             });
 
             buttons.forEach((btn, idx) => {
-                if (idx === imageIndex) {
+                if (idx === mediaIndex) {
                     btn.classList.add('active');
                 } else {
                     btn.classList.remove('active');
